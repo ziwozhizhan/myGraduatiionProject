@@ -1,0 +1,91 @@
+<div class="col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" >
+    <table class="table table-bordered table-hover">
+        <caption>
+            <span class="label label-info"><span class="glyphicon glyphicon-hand-right"></span>权限管理</span>
+            <button class="btn btn-default" type="button" style="float:right" data-toggle="modal" data-target="#p_new_modal">新增</button>
+        </caption>
+        <thead>
+        <tr style=" background-color:#eee;">
+            <th>ID</th>
+            <th>权限名称</th>
+            <th>编码</th>
+            <th>PID</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="pl_list">
+            <!-- 数据显示主题 -->
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function(){
+        //============ 基本配置 start ==================
+        var dataTbody = "pl_list";  //数据主体的id名
+        //============ 基本配置end =====================
+
+        var dataBody = $('#' + dataTbody);//存放数据的主体
+        var jsonStr = '${permissionJson}';
+        var json = eval('(' + jsonStr + ')');
+        children(json, dataBody, 0, dataTbody + "_tr");
+    });
+
+    //json-json数据, dataBody-将数据附加的位置, spaceCount-空格数量, trPid-父级所在的数据行的<tr></tr>的id
+    function children(json, dataBody, spaceCount, trPid){
+        for (var i = 0; i < json.length; i++){
+            var preImg = "leaf"; //数据前的展示图片
+            var space = ""; //空格
+
+            var child = json[i].children;
+            var hasChild = typeof (child) != "undefined" && child != "" && child.length > 0;
+
+            if (hasChild){
+                preImg = "folder";
+            }
+
+            for (var j = 0; j < spaceCount; j++){
+                space = space + "　"; //此处修改递进的距离
+            }
+
+            var nowId = trPid + '_' + json[i].id; //当前数据行的id名,例：dd_body_tr_1_2_5
+            var str = '<tr id="' + nowId + '">' +
+                    '<td>' + json[i].id + '</td>' +
+                    '<td>' + space +
+                    '<a style="cursor:pointer;text-decoration:none;" onclick="collapseOrExpand(this,\'' + nowId + '\')">' +
+                    '<em class="' + preImg + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</em>' + json[i].nameCn +
+                    '</a>' +
+                    '</td>' +
+                    '<td>' + json[i].nameEn + '</td>' +
+                    '<td>' + json[i].pid + '</td>' +
+                    '<td>' +
+                    '<a href="javascript:void(0)" onClick="pShowEditModal(' + json[i].id + ')" >编辑</a>|' +
+                    '<a href="javascript:void(0)" onClick="pDelete(' + json[i].id + ')">删除</a>' +
+                    '</td>' +
+                    '</tr>';
+
+            $(str).appendTo(dataBody);
+
+            if (hasChild){
+                var childSpaceCount = spaceCount + 1;
+                children(child, dataBody, childSpaceCount, nowId);
+            }
+        }
+    }
+
+    //折叠或展开，有class = wszZDorZK已折叠
+    function collapseOrExpand(nowObj, id){
+        //展开子对象
+        if ($(nowObj).hasClass('wszZDorZKTreeTable')){
+            $('tr[id^="' + id + '_"]').each(function(){
+                $(this).css('display','');
+            });
+            $(nowObj).removeClass('wszZDorZKTreeTable');
+            return;
+        }
+        //折叠子对象
+        $('tr[id^="' + id + '_"]').each(function(){
+            $(this).css('display','none');
+        });
+        $(nowObj).addClass('wszZDorZKTreeTable');
+    }
+</script>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+       <!-- 启动aop注解（支撑切面与shiro） -->
+       <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+       <!-- 启用spring  注解 -->
+       <context:annotation-config />
+
+       <!-- 设置使用注解的类所在的jar包 -->
+       <context:component-scan base-package="com.wsz.controller,com.wsz.common"  use-default-filters="false">
+              <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+              <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+       </context:component-scan>
+
+       <!-- 启用spring mvc 注解,没有此句一些mvc注解效果无法实现 -->
+       <mvc:annotation-driven/>
+
+       <!-- 设置转向路径 class="org.springframework.web.servlet.view.InternalResourceViewResolver" jsp-->
+       <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+              <!--<property name="prefix" value="/"/>-->
+              <property name="suffix" value=".html"/>
+              <property name="contentType" value="text/html; charset=utf-8"/>
+              <!-- 把Spring的RequestContext对象暴露为变量request -->
+              <property name="requestContextAttribute" value="request" />
+              <property name="attributesMap">
+                     <map>
+                            <entry key="userInfoTag">
+                                   <bean class="com.wsz.common.UserInfoTag"/>
+                            </entry>
+                            <entry key="mainDataChartTag">
+                                   <bean class="com.wsz.common.MainDataChartTag"/>
+                            </entry>
+                     </map>
+              </property>
+       </bean>
+
+       <!-- <mvc:mapping path="/**" /> 如果只写一个*，则不能拦截类似/*/*的请求。静态资源的请求需要判断不进行拦截 -->
+       <mvc:interceptors>
+              <mvc:interceptor>
+                     <mvc:mapping path="/*/*/**" /><!--拦截二级及以上-->
+                     <mvc:exclude-mapping path="/login/**" />
+                     <bean class="com.wsz.common.SessionTimeoutInterceptor">
+                            <property name="excludedUrls">
+                                   <list>
+                                          <!--<value>/login/</value>-->
+                                   </list>
+                            </property>
+                     </bean>
+              </mvc:interceptor>
+       </mvc:interceptors>
+
+       <!-- 静态资源访问（不拦截此目录下的东西的访问） -->
+       <!--<mvc:resources location="/img/"  mapping="/img/**" />-->
+
+       <!-- 支持Shiro对Controller的方法级AOP安全控制 -->
+       <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+       <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
+              <property name="proxyTargetClass" value="true" />
+       </bean>
+       <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+              <property name="securityManager" ref="securityManager"/>
+       </bean>
+
+</beans>

@@ -1,0 +1,27 @@
+<!-- 顶部logo、系统标题信息、背景图片 -->
+<#assign labUserInfo = userInfoTag() />
+<div class="row banner" >
+    <div class="col-lg-3 col-md-3" >
+        <img src="${ctx}/imges/logo.png" alt="logo" style="width:200px; height:200px;">
+    </div>
+    <div class="col-lg-6 col-md-6 ">
+        <h1>闯西天</h1>—— 项目进度控制系统<br/>
+        <span class="label label-success">悟空语录：细节决定成败，坚持终会成功</span><br/>
+        <embed wmode="transparent" src="${ctx}/theme/common/gy_clock_people.swf" quality="high" bgcolor="#ffffff" width="230" height="90" name="honehoneclock" align="middle" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
+    </div>
+    <div class="col-lg-3 col-md-3 " style="margin-top:30px;">
+        <span class="glyphicon glyphicon-user"></span> 用户：${labUserInfo.name}<br/>
+        <span class="glyphicon glyphicon-heart-empty"></span> 角色：${labUserInfo.userRoles} <br/>
+        <!--<embed wmode="transparent" src="${ctx}/theme/common/gy_clock_people.swf" quality="high" bgcolor="#ffffff" width="160" height="70" name="honehoneclock" align="middle" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">-->
+        <br/>
+        <button type="button" class="btn btn-primary btn-sm" onclick="exit()">
+            <span class="glyphicon glyphicon-off"></span> 退出 <br/>
+        </button>
+    </div >
+</div>
+<script>
+    //退出
+    function exit(){
+        location.href = "${ctx}/admin/main/exit.do";
+    }
+</script>

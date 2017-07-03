@@ -1,0 +1,225 @@
+<ul id="ddBody" style="list-style:none;"><!-- id 名称中不能包含下划线"_"-->
+
+</ul>
+<script>
+    $(document).ready(function(){
+        //============ 基本配置 start ==================
+        var dataTbody = "ddBody";  //数据主体的id名
+        //============ 基本配置end =====================
+
+        var dataBody = $('#' + dataTbody);//存放数据的主体对象
+
+        //注：数据中根节点id=0
+        var jsonStr = '${permList}';
+        var json = eval('(' + jsonStr + ')');
+        //初始化树形结构
+        children(json, dataBody, 0, dataTbody + "_li");
+
+        //设置初始化选中状态
+        var treeLi = document.getElementById(dataTbody).getElementsByTagName("li");
+        for (var i = 0; i < treeLi.length; i++) {
+            if ($(treeLi[i]).hasClass("wszCheckedBoxLi")){
+                var nowObj = treeLi[i].getElementsByTagName("input")[0];
+                nowObj.checked = true;
+                fireChangeEvent(nowObj);
+            }
+        };
+    });
+
+    //json-json数据, dataBody-将数据附加的位置, spaceCount-空格数量, trPid-父级所在的数据行的<li></li>的id
+    function children(json, dataBody, spaceCount, liPid){
+        for (var i = 0; i < json.length; i++){
+            var preImg = ""; //数据前的展示图片
+            var space = ""; //空格
+
+            var child = json[i].children;
+            var hasChild = (typeof (child) != "undefined" && child != "" && child.length > 0);
+            var addClass = ""; //做个标记
+
+            if (hasChild){
+                preImg = "expanded";
+            } else if (json[i].checked){
+                addClass = "wszCheckedBoxLi"; //做个标记，树形初始化后需要将含有此class的列设为选中状态
+            }
+
+            for (var j = 0; j < spaceCount; j++){
+                space = space + "　"; //此处修改递进的距离
+            }
+
+            var nowId = liPid + '_' + json[i].id; //当前数据行的id名,例：ddBody_li_1_2
+            //checkbox 的name属性名根据具体情况修改
+            var str = '<li class="' + addClass + '" id="' + nowId + '">' + space +
+                    '<em class="' + preImg + '" style="cursor:pointer" onclick="ttCollapseOrExpand(\'' + nowId + '\')">　</em>' +
+                    '<input type="checkbox" name="box_value" value="' + json[i].id +
+                    '" onchange="afterCheckboxChange(this,' + hasChild + ',\'' + nowId + '\')">' +
+                    '<label class="text" onclick="ttCollapseOrExpand(\'' + nowId + '\')">' + json[i].nameCn + '</label>' +
+                    '</li>';
+
+            $(str).appendTo(dataBody);
+
+            if (hasChild){
+                var childSpaceCount = spaceCount + 1;
+                children(child, dataBody, childSpaceCount, nowId);
+            }
+        }
+    }
+
+    //checkbox状态改变后执行：选中时子类全部选中，检查同类是否都已选中，若是则改变父类状态为选中，若非设置父类$('#cb')[0].indeterminate = true;
+    //nowObj-当前对象,hasChild-是否有子对象,nowId-当前数据行的id名
+    function afterCheckboxChange(nowObj,hasChild,nowId){
+        //当前对象的状态已经变为  选中
+        if (nowObj.checked || nowObj.indeterminate){
+            //有子对象，修改所有子对象为选中状态 (必须在修改父状态之前)
+            if (nowObj.checked && hasChild){
+                $('li[id^="' + nowId + '_"]').each(function(){
+                    this.getElementsByTagName("input")[0].indeterminate = false;
+                    this.getElementsByTagName("input")[0].checked = true;
+                });
+            }
+
+            //修改父类状态
+            var idArray = nowId.split("_");
+            var notFirst = idArray.length > 3; //是否不是一级目录,一级目录不需要修改父级状态
+            if (notFirst){
+                var parentId = idArray[0]; //父id名
+                for (var k = 1; k < idArray.length-1; k++){
+                    parentId = parentId + "_" + idArray[k];
+                }
+                var changePidStatus = true; //是否修改父级状态
+                $('li[id^="' + parentId + '_"]').each(function(){
+                    if (this.getElementsByTagName("input")[0].checked){
+
+                    } else{
+                        changePidStatus = false;
+                        return false;
+                    }
+
+                });
+                if (changePidStatus){
+                    var pidInput = document.getElementById(parentId).getElementsByTagName("input")[0];
+                    pidInput.indeterminate = false;
+                    pidInput.checked = true;
+                    fireChangeEvent(pidInput);
+                } else{
+                    var pidInput = document.getElementById(parentId).getElementsByTagName("input")[0];
+                    pidInput.indeterminate = true;
+                    pidInput.checked = false;
+                    fireChangeEvent(pidInput);
+                }
+            }
+
+            return;
+        }
+
+        //当前对象的状态已经变为  未选中
+        if (!nowObj.checked){
+            //有子对象，修改所有子对象为 未选中状态 (必须在修改父状态之前)
+            if (!nowObj.checked && hasChild){
+                $('li[id^="' + nowId + '_"]').each(function(){
+                    this.getElementsByTagName("input")[0].checked = false;
+                });
+            }
+
+            //修改父类状态
+            var idArray = nowId.split("_");
+            var notFirst = idArray.length > 3; //是否不是一级目录,一级目录不需要修改父级状态
+            if (notFirst){
+                var parentId = idArray[0]; //父id名
+                for (var k = 1; k < idArray.length-1; k++){
+                    parentId = parentId + "_" + idArray[k];
+                }
+                var changePidStatus = true; //是否修改父级状态
+                $('li[id^="' + parentId + '_"]').each(function(){
+                    if (!this.getElementsByTagName("input")[0].checked){
+
+                    } else{
+                        changePidStatus = false;
+                        return false;
+                    }
+
+                });
+                if (changePidStatus){
+                    var pidInput = document.getElementById(parentId).getElementsByTagName("input")[0];
+                    pidInput.indeterminate = false;
+                    pidInput.checked = false;
+                    fireChangeEvent(pidInput);
+                } else{
+                    var pidInput = document.getElementById(parentId).getElementsByTagName("input")[0];
+                    pidInput.indeterminate = true;
+                    pidInput.checked = false;
+                    fireChangeEvent(pidInput);
+                }
+            }
+
+            return;
+        }
+
+    }
+
+    //触发 onchange事件
+    function fireChangeEvent(obj){
+        if (obj.fireEvent){
+            obj.fireEvent("onchange");  //IE 浏览器
+        } else{
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent("change",false,true);
+            obj.dispatchEvent(evt);  //chrome, firfox浏览器
+        }
+    }
+
+    //折叠或展开，有class = wszZDorZK已折叠
+    function ttCollapseOrExpand(id){
+        var nowObj = document.getElementById(id).getElementsByTagName("em")[0];
+        if ($(nowObj).hasClass('collapsed') || $(nowObj).hasClass('expanded')){
+            //展开所有子对象,即：所有直接子对象与子对象的子对象
+            if ($(nowObj).hasClass('collapsed')){
+                $('li[id^="' + id + '_"]').each(function(){
+                    $(this).css('display','');
+                    var preImg = this.getElementsByTagName("em")[0]; //折叠or展开 图标 对象
+                    if ($(preImg).hasClass('collapsed')){
+                        $(preImg).removeClass('collapsed');
+                        $(preImg).addClass('expanded');
+                    }
+                });
+                $(nowObj).removeClass('collapsed');
+                $(nowObj).addClass('expanded');
+                return;
+            }
+            //折叠子对象
+            $('li[id^="' + id + '_"]').each(function(){
+                $(this).css('display','none');
+            });
+            $(nowObj).removeClass('expanded');
+            $(nowObj).addClass('collapsed');
+        }
+    }
+
+    //提交 选中和半选的 值,用户可自行定义方法名 =================================
+    function rKeepPermission(){
+        var roleId = '${roleId}';
+        var obj = document.getElementsByName('box_value');  //选择所有name="'box_value'"的对象，返回数组
+
+        //取到对象数组后，我们来循环检测它是不是被选中
+        var s='';
+        for(var i=0; i<obj.length; i++){
+            if(obj[i].checked || obj[i].indeterminate){
+                s += obj[i].value+',';  //如果选中，将value添加到变量s中
+            }
+        }
+
+        alert('box-value:' + s + "roleId:" + roleId);
+
+        //... 向后台提交字符串s, 后台将字符串解析成数组就好
+        $.post("${ctx}/admin/role/saveRolePerms.do",{roleId:roleId, permissions:s},function(result){
+            if (result == "ok"){
+                alert ("为角色【" + roleId + "】赋予权限成功");
+                $('#r_permission_modal').modal('hide');
+                return;
+            }
+            if (result == "error"){
+                alert ("为角色【" + roleId + "】赋予权限失败");
+            }
+        });
+    }
+
+</script>

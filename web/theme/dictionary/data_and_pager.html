@@ -1,0 +1,38 @@
+<#include "/theme/common/pager.html" />
+<!-- 数据列表 -->
+<div class="row">
+    <div class="col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" >
+        <table class="table table-bordered table-hover">
+            <caption></caption>
+            <thead>
+            <tr style=" background-color:#eee;">
+                <th>ID</th>
+                <th>类别</th>
+                <th>类别成员</th>
+                <th>类别值</th>
+                <th>类别成员值</th>
+                <th>排序</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#list dataWebPage.rows as data>
+                <tr>
+                    <td>${data.id}</td>
+                    <td>${data.family}</td>
+                    <td>${data.member}</td>
+                    <td>${data.familyValue}</td>
+                    <td>${data.memberValue}</td>
+                    <td>${data.sort}</td>
+                    <td>
+                        <a href="javascript:void(0)" onClick="ddShowEditModal(${data.id})">编辑</a>|
+                        <a href="javascript:void(0)" onClick="ddDelete(${data.id})">删除</a>
+                    </td>
+                </tr>
+            </#list>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- 分页 -->
+<@pager dataWebPage />

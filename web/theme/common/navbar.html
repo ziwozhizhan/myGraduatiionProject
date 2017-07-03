@@ -1,0 +1,61 @@
+<div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <nav class="navbar navbar-default " role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target="#example-navbar-collapse">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">导航</a>
+                </div>
+                <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li id="nav_main"><a href="${ctx}/admin/main/goMain.do">首页</a></li>
+                        <li id="nav_my_work" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                主要工作 <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="${ctx}/admin/main/goMyTask.do">待办任务</a></li>
+                                <li><a href="${ctx}/admin/main/goPartakeProject.do">参与项目</a></li>
+                                <li><a href="${ctx}/admin/main/goNote.do">工作随笔</a></li>
+                            </ul>
+                        </li>
+                        <li id="nav_project" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                项目管理 <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="${ctx}/admin/main/goMyProject.do">我的项目</a></li>
+                                <li><a href="${ctx}/admin/main/goAllProject.do">所有项目</a></li>
+                            </ul>
+                        </li>
+                        <li id="nav_system" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                系统管理 <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="${ctx}/admin/main/goUser.do">用户管理</a></li>
+                                <li><a href="${ctx}/admin/main/goRole.do">角色管理</a></li>
+                                <li><a href="${ctx}/admin/main/goPermission.do">权限管理</a></li>
+                            </ul>
+                        </li>
+                        <li id="nav_dictionary" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                字典管理 <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="${ctx}/admin/main/goData.do">数据字典</a></li>
+                            </ul>
+                        </li>
+                        <li id="nav_personal_center"><a href="${ctx}/admin/main/goPersonalCenter.do">个人中心</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>

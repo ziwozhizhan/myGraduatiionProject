@@ -1,0 +1,136 @@
+<#include "/theme/common/header.html" />
+<div class="container">
+    <!-- 顶部logo、系统标题信息、背景图片 -->
+    <#include "/theme/common/logo_and_banner.html" />
+    <!-- 个人信息、导航栏 -->
+    <#include "/theme/common/navbar.html" />
+    <!-- 中心内容显示区 start -->
+    <!-- 页面标签与查询功能栏 -->
+    <div class="row">
+        <div class="col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" >
+            <label class="label label-info"><span class="glyphicon glyphicon-hand-right"></span>参与项目</label>
+        </div>
+    </div><br/>
+    <div class="row">
+        <div class="col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" >
+            <form role="form" id="pp_search_fm">
+                <div class="input-group">
+                    <span class="input-group-addon">名称：</span>
+                    <input type="text" class="form-control" placeholder="请输入项目名称" name="projectName" id="pp_search_project_name">
+                    <span class="input-group-addon">状态：</span>
+                    <div class="form-group">
+                        <select class="form-control" name="status" id="pp_search_status">
+                            <option value="">===请选择===</option>
+                            <option value="0">未启动</option>
+                            <option value="1">进行中</option>
+                            <option value="2">暂停</option>
+                            <option value="3">作废</option>
+                            <option value="4">完成</option>
+                        </select>
+                    </div>
+                    <span class="input-group-addon">负责人：</span>
+                    <input type="text" class="form-control"  placeholder="请输入负责人姓名" name="name" id="pp_search_name">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" onclick="ppSearch()">
+                            查询
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- 数据列表与分页 -->
+    <div id="pp_list_and_pager">
+        <#include "/theme/work/pp_list_and_pager.html" />
+    </div>
+    <!-- 项目日志弹窗 -->
+    <div class="modal fade" id="pp_project_log_modal" tabindex="-1" role="dialog" aria-labelledby="pp_project_log_label" aria-hidden="true"
+         data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="pp_project_log_label">项目日志</h4>
+                </div>
+                <!-- 弹窗主题内容 -->
+                <div class="modal-body" id="pp_project_log_modal_body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 中心内容显示区 end -->
+</div>
+<#include "/theme/common/footer.html" />
+<script>
+    //导航选中样式
+    $(function(){
+        $("#nav_my_work").addClass("active");
+    });
+
+    //查询
+    function ppSearch(){
+        $.post("${ctx}/admin/work/listPartakeProject.do",$("#pp_search_fm").serialize(),function(result){
+            $("#pp_list_and_pager").html(result);
+        });
+    }
+
+    //打开 项目日志 弹窗
+    function ppShowProjectLogModal(projectId){
+        $('#pp_project_log_modal_body').html("暂时没有获取到数据");
+        $.post("${ctx}/admin/work/listPartakeProjectLog.do",{projectId:projectId},function(result){
+            $('#pp_project_log_modal_body').html(result);
+        });
+        $('#pp_project_log_modal').modal('show');
+    }
+
+    //查看任务
+    function ppGoAllProjectTask(projectId){
+        window.open("${ctx}/admin/main/goAllProjectTask.do?projectId="+projectId);
+    }
+
+    //分页方法 start===============
+    //为上一页绑定方法
+    function pagerPre(hasPre,pageNo){
+        if (!hasPre){
+            return ;
+        }
+        pageNo--;
+        pagerPost(pageNo);
+    }
+    //为下一页绑定方法
+    function pagerNext(hasNext,pageNo){
+        if (!hasNext){
+            return ;
+        }
+        pageNo++;
+        pagerPost(pageNo);
+    }
+    //为GO跳转绑定方法
+    function pagerGo(totalPage){
+        if($("#pager_go_page").val()==""){
+            return;
+        }
+        var goPage = parseInt($("#pager_go_page").val());//要跳转的页数
+        if ( goPage < 1){
+            alert("要跳转到页数不能小于1");return;
+        }
+        if (goPage > totalPage){
+            alert("要跳转的页数不能超过最大页数");return;
+        }
+        pagerPost(goPage);
+    }
+    //发送请求
+    function pagerPost(pageNo){
+        var projectName = $('#pp_search_project_name').val();
+        var status = $('#pp_search_status').val();
+        var name = $('#pp_search_name').val();
+        $.post("${ctx}/admin/work/listPartakeProject.do",{projectName:projectName,status:status,name:name,pageNo:pageNo},function(result){
+            $("#pp_list_and_pager").html(result);
+        });
+    }
+    //分页方法 end===============
+</script>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
+<title>闯西天</title>
+<!-- 基本路径 -->
+<#assign ctx=request.contextPath />
+
+<link rel="stylesheet" type="text/css" href="${ctx}/plugin/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="${ctx}/css/common.css">
+<script src="${ctx}/js/jquery-3.2.0.min.js"></script>
+<script src="${ctx}/plugin/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+</head>
+<body class="login-background" style="height:100%;">
+<script src="${ctx}/js/canvas-nest.min.js" count="200" zindex="-2" opacity="0.8" color="47,135,193" type="text/javascript">
+</script>
+<div class="container" style="height:100%;">
+    <div class="row" style="margin-top:5%;">
+        <div class="col-md-6 col-md-offset-4">
+            <h1  class="text-danger">闯西天-项目进度控制系统</h1>
+        </div>
+        <div class="col-md-2">
+            <img src="${ctx}/imges/time_going.jpg" alt="与时间赛跑" style="width:100px;"><br/>
+            <label class="text-success">青春与时间赛跑</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 col-md-offset-1" >
+            <img src="${ctx}/imges/login_houzi.png" alt="驾云的猴子">
+        </div>
+        <div class="col-md-8" >
+            <div class="row">
+                <div class="col-md-5 col-md-offset-1">
+                    <form id="l_sub_fm" class="login-form" role="form">
+                        <!-- 结果展示区 -->
+                        <div id="l_msg" class="alert alert-danger" style="display:none; text-align:center;"></div>
+
+                        <div class="input-group">
+                            <span class="input-group-addon">用户名</span>
+                            <input id="l_uname" name="uname" type="text" class="form-control" placeholder="请输入用户名" >
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">密码</span>
+                            <input id="l_pwd" name="password" type="password" class="form-control"  placeholder="请输入密码">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">验证码</span>
+                            <input id="l_code" name="code" type="text" class="form-control"  placeholder="请输入验证码">
+                            <span class="input-group-addon">
+                                <a data-toggle="tooltip" data-placement="top" title="点击换一个" onclick="lChangeCode();">
+                                    <img id="l_code_img" style="width:60px; height:20px;" src="${ctx}/login/validate.do"/>
+                                </a>
+                            </span>
+                        </div>
+                        <div>
+                            <button id="l_sub_btn" type="button" class="btn btn-primary btn-xs btn-block">登录</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <img src="${ctx}/imges/login_yun.png" alt="云朵">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    var unameNotNull = false;
+    var pwdNotNull = false;
+    var codeNutNull = false;
+
+    //鼠标进入关闭提示框
+    $("#l_uname").focus(function(){$("#l_msg").css('display','none');});
+    $("#l_pwd").focus(function(){$("#l_msg").css('display','none');});
+    $("#l_code").focus(function(){$("#l_msg").css('display','none');});
+
+    //验证用户名非空
+    $("#l_uname").blur(function(){
+        var uname = $("#l_uname");
+        if (uname.val()=="" || typeof(uname.val())=="undefined"){
+            unameNotNull = false;
+            uname.addClass("login-warning");
+        } else{
+            unameNotNull = true;
+            uname.removeClass("login-warning");
+        }
+    });
+
+    //验证密码非空
+    $("#l_pwd").blur(function(){
+        var pwd = $("#l_pwd");
+        if (pwd.val()=="" || typeof(pwd.val())=="undefined"){
+            pwdNotNull = false;
+            pwd.addClass("login-warning");
+        } else{
+            pwdNotNull = true;
+            pwd.removeClass("login-warning");
+        }
+    });
+
+    //验证验证码非空
+    $("#l_code").blur(function(){
+        var code = $("#l_code");
+        if (code.val()=="" || typeof(code.val())=="undefined"){
+            codeNutNull = false;
+            code.addClass("login-warning");
+        } else{
+            codeNutNull = true;
+            code.removeClass("login-warning");
+        }
+    });
+
+    //提交
+    $("#l_sub_btn").click(function(){
+//        if (unameNotNull && pwdNotNull && codeNutNull){
+        if (true){
+            //提交
+            $.post("${ctx}/login/login.do",$("#l_sub_fm").serialize(),function(result){
+                if (result.success){
+                    location.href = "${ctx}/admin/main/goMain.do";
+                }else if (result.error){
+                    $("#l_msg").html(result.error);
+                    $("#l_msg").css('display','');
+                }
+            });
+            return;
+        }
+        //内容未填完
+        if (!unameNotNull){
+            $("#l_uname").addClass("login-warning");
+        }
+        if (!pwdNotNull){
+            $("#l_pwd").addClass("login-warning");
+        }
+        if (!codeNutNull){
+            $("#l_code").addClass("login-warning");
+        }
+    });
+
+    //更换验证码
+    function lChangeCode(){
+        $("#l_code_img").attr("src","${ctx}/login/validate.do?tm="+Math.random());
+    }
+
+    //启用提示框
+    $(function () { $("[data-toggle='tooltip']").tooltip(); });
+</script>

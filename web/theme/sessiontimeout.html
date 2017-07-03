@@ -1,0 +1,9 @@
+<#include "/theme/common/header.html" />
+<div class="container">
+</div>
+<#include "/theme/common/footer.html" />
+<script type="text/javascript">
+    //父窗口对象 中打开一个连接 连接到我们的登录界面 当页面跳转会自动执行下面的JavaScript代码
+    alert('登录已过期，请重新登录！');
+    window.top.location.href="${ctx}/login/goLogin.do";
+</script>

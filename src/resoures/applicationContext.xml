@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       ">
+
+       <!-- 开启注解处理器 -->
+       <context:annotation-config/>
+       <!-- 指定spring 自动扫描包路径 -->
+       <context:component-scan base-package="com.wsz"/>
+       <!-- 开启基于@AspectJ切面的注解处理器 -->
+       <aop:aspectj-autoproxy proxy-target-class="true"/>
+       <!-- 开启注解式事务 -->
+       <tx:annotation-driven transaction-manager="txManager"/>
+
+       <!-- 加载配置属性文件 -->
+       <context:property-placeholder ignore-unresolvable="true" location="classpath:system.properties"/>
+
+       <!-- 配置c3p0连接池-->
+       <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+              <property name="driverClass" value="${jdbc.driverClassName}"/>
+              <property name="user" value="${jdbc.username}"/>
+              <property name="password" value="${jdbc.password}"/>
+              <property name="jdbcUrl" value="${jdbc.url}"/>
+              <property name="minPoolSize" value="${c3p0.minPoolSize}"/>
+              <property name="maxPoolSize" value="${c3p0.maxPoolSize}"/>
+              <property name="initialPoolSize" value="${c3p0.initialPoolSize}"/>
+              <property name="acquireIncrement" value="${c3p0.acquireIncrement}"/>
+              <property name="maxIdleTime" value="${c3p0.maxIdleTime}"/>
+              <property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}"/>
+              <property name="acquireRetryAttempts" value="${c3p0.acquireRetryAttempts}"/>
+              <property name="breakAfterAcquireFailure" value="true" />
+              <property name="testConnectionOnCheckout" value="false" />
+       </bean>
+
+       <!-- 配置会话管理工厂 -->
+       <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+              <property name="dataSource" ref="dataSource"/>
+              <property name="hibernateProperties">
+                     <props>
+                            <prop key="hibernate.show_sql">true</prop>
+                            <prop key="hibernate.format_sql">true</prop>
+                            <!-- 指定数据库方言 -->
+                            <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                            <prop key="hibernate.connection.url">jdbc:mysql://localhost:3306/gowest</prop>
+                            <prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</prop>
+                     </props>
+              </property>
+              <!-- 增加映射文件 -->
+              <!--<property name="mappingResources">
+                     <list>
+
+                     </list>
+              </property>-->
+              <!-- 增加注解映射文件 -->
+              <property name="annotatedClasses">
+                     <list>
+                            <value>com.wsz.pojo.po.DataDictionaryPO</value>
+                            <value>com.wsz.pojo.po.PermissionPO</value>
+                            <value>com.wsz.pojo.po.RolePO</value>
+                            <value>com.wsz.pojo.po.UserPO</value>
+                            <value>com.wsz.pojo.po.ProjectPO</value>
+                            <value>com.wsz.pojo.po.ProjectLogPO</value>
+                            <value>com.wsz.pojo.po.ProjectTaskPO</value>
+                            <value>com.wsz.pojo.po.ProjectTaskLogPO</value>
+                            <value>com.wsz.pojo.po.ArticlePO</value>
+                     </list>
+              </property>
+       </bean>
+
+       <bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+              <property name="sessionFactory" ref="sessionFactory"/>
+       </bean>
+
+       <!-- 配置事务管理器 -->
+       <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+              <property name="sessionFactory" ref="sessionFactory"/>
+       </bean>
+       <!-- 配置事务管理 -->
+       <tx:advice id="txAdvice" transaction-manager="txManager">
+              <tx:attributes>
+                     <tx:method name="list*" read-only="true"/>
+                     <tx:method name="get*" read-only="true"/>
+                     <tx:method name="save*" read-only="false"/>
+                     <tx:method name="remove*" read-only="false"/>
+                     <tx:method name="update*" read-only="false"/>
+              </tx:attributes>
+       </tx:advice>
+       <!-- 配置事务切面 -->
+       <aop:config>
+              <aop:pointcut id="bussinessService" expression="execution(* com.wsz.service*.*.*(..))"/>
+              <aop:advisor advice-ref="txAdvice" pointcut-ref="bussinessService"/>
+       </aop:config>
+       <tx:annotation-driven transaction-manager="txManager"/>
+
+       <!-- 配置freemarker -->
+       <bean id="freemarkerConfig"
+             class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+              <property name="templateLoaderPath" value="/" /><!-- 路径前缀 -->
+              <property name="freemarkerSettings" ref="freemarkerConfiguration"></property>
+       </bean>
+       <bean id="freemarkerConfiguration"
+             class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+              <property name="location" value="classpath:freemarker.properties" />
+       </bean>
+
+       <!-- 配置缓存 -->
+       <bean id="catchPool" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+              <property name="configLocation" value="classpath:${ehcache.configFile}"></property>
+       </bean>
+</beans>

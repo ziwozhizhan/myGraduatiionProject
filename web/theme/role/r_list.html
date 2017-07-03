@@ -1,0 +1,30 @@
+<div class="col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" >
+    <table class="table table-bordered table-hover">
+        <caption>
+            <span class="label label-info"><span class="glyphicon glyphicon-hand-right"></span>角色管理</span>
+            <button class="btn btn-default" type="button" style="float:right" data-toggle="modal" data-target="#r_new_modal">新增</button>
+        </caption>
+        <thead>
+        <tr style=" background-color:#eee;">
+            <th>ID</th>
+            <th>角色名称</th>
+            <th>描述</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <#list roleList as role>
+            <tr>
+                <td>${role.id}</td>
+                <td>${role.roleName}</td>
+                <td>${role.describe}</td>
+                <td>
+                    <a href="javascript:void(0)" onClick="rShowEditModal(${role.id})" >编辑</a>|
+                    <a href="javascript:void(0)" onClick="rDelete(${role.id})">删除</a>|
+                    <a href="javascript:void(0)" onClick="rShowPermissionModal(${role.id})">赋予权限</a>
+                </td>
+            </tr>
+        </#list>
+        </tbody>
+    </table>
+</div>

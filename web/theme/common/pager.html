@@ -1,0 +1,26 @@
+<!-- 分页 -->
+<#macro pager dataWebPage>
+    <div class="row">
+        <div class="col-lg-5 col-md-5 col-lg-offset-1 col-md-offset-1" style=" margin-top:-10px;" >
+			<span class="label label-default">
+				共有数据<label id="pager_total"> ${dataWebPage.total} </label>条,
+				当前第<label id="pager_pageNo"> ${dataWebPage.currentPageNo} </label>页,
+				共<label id="pager_total_page"> ${dataWebPage.totalPage} </label>页
+			</span>
+        </div>
+        <div class="col-lg-5 col-md-5" >
+            <ul class="pager" style=" margin-top:-10px;">
+                <li class="previous <#if !dataWebPage.hasPreviousPage>disabled</#if>">
+                    <a href="javascript:void(0);" onclick="pagerPre('${dataWebPage.hasPreviousPage}','${dataWebPage.currentPageNo}')">&larr; 上一页</a>
+                </li>
+                <span>跳转到第</span>
+                <input id="pager_go_page" type="text" style="width:40px;"><span>页</span>
+                <button class="btn btn-default" type="button" onclick="pagerGo('${dataWebPage.totalPage}')">GO!</button>
+                <li class="next <#if !dataWebPage.hasNextPage>disabled</#if>">
+                    <a href="javascript:void(0);" onclick="pagerNext('${dataWebPage.hasNextPage}','${dataWebPage.currentPageNo}')">下一页 &rarr;</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</#macro>
+<!-- 分页的上一页、下一页、跳转 具体的操作方法由具体的页面实现 -->

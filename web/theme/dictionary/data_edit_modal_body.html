@@ -1,0 +1,59 @@
+<form class="form-horizontal" role="form" id="dd_edit_modal_fm">
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><em class="star-em">* </em>ID</label>
+        <div class="col-sm-7">
+            <label class="control-label"> ${updateData.id}</label>
+            <input name="id" type="hidden" value="${updateData.id}"/>
+        </div>
+    </div>
+    <div class="form-group" id="dd_edit_family_fp">
+        <label class="col-sm-3 control-label"><em class="star-em">* </em>类别</label>
+        <div class="col-sm-7">
+            <input class="form-control" type="text" id="dd_edit_family" name="family" value="${updateData.family}">
+        </div>
+    </div>
+    <div class="form-group" id="dd_edit_family_value_fp">
+        <label class="col-sm-3 control-label"><em class="star-em">* </em>类别值</label>
+        <div class="col-sm-7">
+            <input class="form-control" type="text" id="dd_edit_family_value" name="familyValue" value="${updateData.familyValue}" readonly>
+            <i class="note-i">同一类别类别值相同</i>
+        </div>
+    </div>
+    <div class="form-group" id="dd_edit_family_member_fp">
+        <label class="col-sm-3 control-label"><em class="star-em">* </em>类别成员</label>
+        <div class="col-sm-7">
+            <input class="form-control" type="text" id="dd_edit_family_member" name="member" value="${updateData.member}">
+        </div>
+    </div>
+    <div class="form-group" id="dd_edit_family_member_value_fp">
+        <label class="col-sm-3 control-label"><em class="star-em">* </em>类别成员值</label>
+        <div class="col-sm-7">
+            <input class="form-control" type="text" id="dd_edit_family_member_value" name="memberValue" value="${updateData.memberValue}" readonly>
+        </div>
+    </div>
+    <div class="form-group" id="dd_edit_sort_fp">
+        <label class="col-sm-3 control-label"><em class="star-em">* </em>排序(整数)</label>
+        <div class="col-sm-7">
+            <input class="form-control" type="text" id="dd_edit_sort" name="sort" value="${updateData.sort}">
+            <i class="note-i">值越大越靠前，>=0</i>
+        </div>
+    </div>
+</form>
+
+<!--<form id="dd_edit_modal_fm">-->
+    <!--<em class="star-em">* </em>ID：<label> ${updateData.id}</label>-->
+    <!--<br/><br/>-->
+    <!--<em class="star-em">* </em>类别：<input type="text" id="dd_edit_family" name="family" value="${updateData.family}">-->
+    <!--<br/><br/>-->
+    <!--<em class="star-em">* </em>类别值：<input type="text" id="dd_edit_family_value" name="familyValue"  value="${updateData.familyValue}" readonly><i>同一类别类别值相同</i>-->
+    <!--<br/><br/>-->
+    <!--<em class="star-em">* </em>类别成员：<input type="text" id="dd_edit_family_member" name="member" value="${updateData.member}">-->
+    <!--<br/><br/>-->
+    <!--<em class="star-em">* </em>类别成员值：<input type="text" id="dd_edit_family_member_value" name="memberValue" value="${updateData.memberValue}" readonly>-->
+    <!--<br/><br/>-->
+    <!--<em class="star-em">* </em>排序(整数)：<input type="text" id="dd_edit_sort" name="sort" value="${updateData.sort}"><i>值越大越靠前，>=0</i>-->
+    <!--<input name="id" type="hidden" value="${updateData.id}"/>-->
+<!--</form>-->
+
+
+

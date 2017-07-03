@@ -1,0 +1,38 @@
+<form class="form-horizontal" role="form" id="u_role_modal_fm">
+    <#list updateUserRoles as r>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="userRole" value="${r.id}" <#if r.userRole>checked="checked"</#if>>${r.roleName}
+            </label>
+        </div>
+    </#list>
+</form>
+<script>
+    //保存 角色
+    function uKeepRole(){
+        var userId = '${userId}';
+        var obj = document.getElementsByName('userRole');
+
+        //取到对象数组后，我们来循环检测它是不是被选中
+        var s='';
+        for(var i=0; i<obj.length; i++){
+            if(obj[i].checked){
+                s += obj[i].value+',';  //如果选中，将value添加到变量s中
+            }
+        }
+
+        alert('userRole:' + s + "userId:" + userId);
+
+        //... 向后台提交字符串s, 后台将字符串解析成数组就好
+        $.post("${ctx}/admin/user/saveUserRoles.do",{userId:userId, userRoles:s},function(result){
+            if (result == "ok"){
+                alert ("为用户【ID=" + userId + "】赋予角色成功");
+                $('#u_role_modal').modal('hide');
+                return;
+            }
+            if (result == "error"){
+                alert ("为用户【ID=" + userId + "】赋予角色成功");
+            }
+        });
+    }
+</script>

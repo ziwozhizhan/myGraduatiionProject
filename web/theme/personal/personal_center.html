@@ -1,0 +1,230 @@
+<#include "/theme/common/header.html" />
+<div class="container">
+    <!-- 顶部logo、系统标题信息、背景图片 -->
+    <#include "/theme/common/logo_and_banner.html" />
+    <!-- 个人信息、导航栏 -->
+    <#include "/theme/common/navbar.html" />
+    <!-- 中心内容显示区 start -->
+    <div class="row">
+        <div class="col-lg-5 col-md-5 col-lg-offset-1 col-md-offset-1" >
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        个人信息
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" id="pc_information_fm">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><em class="star-em">* </em>ID</label>
+                            <label class="col-sm-8 control-label" style="text-align:left">${personalUser.id}</label>
+                            <input type="hidden" id="pc_info_id" value="${personalUser.id}" name="id">
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><em class="star-em">* </em>用户名</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="pc_uname" value="${personalUser.uname}" readonly>
+                                <i class="note-i">不能修改</i>
+                            </div>
+                        </div>
+                        <div class="form-group" id="pt_new_task_completer_fp">
+                            <label class="col-sm-2 control-label"><em class="star-em">* </em>性别</label>
+                            <div class="col-sm-8">
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="sex" id="optionsRadios3" value="1" <#if (personalUser.sex==1)>checked</#if>>男
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="sex" id="optionsRadios4" value="0" <#if (personalUser.sex==0)>checked</#if>>女
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="pc_name_fp">
+                            <label class="col-sm-2 control-label"><em class="star-em">* </em>真实姓名</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="pc_name" value="${personalUser.name}" name="name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><em class="star-em">* </em>职位</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" name="position">
+                                    <#list personalUserPosition as p>
+                                        <option value="${p.id}" <#if (p.id==personalUser.position)>selected = "selected"</#if>>${p.member}</option>
+                                    </#list>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><em class="star-em">* </em>部门</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" name="department">
+                                    <#list personalUserDepartment as d>
+                                        <option value="${d.id}" <#if (d.id==personalUser.department)>selected = "selected"</#if>>${d.member}</option>
+                                    </#list>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="pc_contact_way_fp">
+                            <label class="col-sm-2 control-label"><em class="star-em">* </em>联系方式</label>
+                            <div class="col-sm-8">
+                                <textarea class="form-control" rows="3" id="pc_contact_way" name="contactWay" placeholder="例：手机号:180xxx,QQ:455xxx,微信:saCcx">${personalUser.contactWay}</textarea>
+                                <i class="note-i">标点都是英文状态下,不操作 60 字符</i>
+                                <br/>
+                                <button type="button" class="btn btn-primary btn-sm btn-block" onclick="pcEditInfo()">确认修改个人信息</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-5" >
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        密码修改
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" id="pc_password_fm">
+                        <input type="hidden" id="pc_pwd_id" value="${personalUser.id}" name="id">
+                        <div class="form-group" id="pc_old_pwd_fp">
+                            <label class="col-sm-3 control-label"><em class="star-em">* </em>原密码</label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control" id="pc_old_pwd" value="" name="oldPassWord">
+                            </div>
+                        </div>
+                        <div class="form-group" id="pc_new_pwd_fp">
+                            <label class="col-sm-3 control-label"><em class="star-em">* </em>新密码</label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control" id="pc_new_pwd" value="" name="password">
+                            </div>
+                        </div>
+                        <div class="form-group" id="pc_confirm_pwd_fp">
+                            <label class="col-sm-3 control-label"><em class="star-em">* </em>确认密码</label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control" id="pc_confirm_pwd" value="">
+                                <br/>
+                                <button type="button" class="btn btn-primary btn-sm btn-block" onclick="pcEditPwd()">确认修改</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 中心内容显示区 end -->
+</div>
+<#include "/theme/common/footer.html" />
+<script>
+    var currentInfoWarning = "pc_name_fp";//保存弹窗中有警告样式的文本框ID
+    var currentPwdWarning = "pc_old_pwd_fp";
+
+    //导航选中样式
+    $(function(){
+        $("#nav_personal_center").addClass("active");
+    });
+
+    //修改个人信息
+    function pcEditInfo(){
+        $("#" + currentInfoWarning).removeClass("has-error");
+
+        var name = $("#pc_name");
+        var nameValue = name.val();
+        if (typeof(nameValue)=="undefined" || nameValue==""){
+            currentInfoWarning = "pc_name_fp";
+            $("#" + currentInfoWarning).addClass("has-error");
+            name.focus();
+            return;
+        }
+
+        var contact = $("#pc_contact_way");
+        var contactValue = contact.val();
+        if (typeof(contactValue)=="undefined" || contactValue==""){
+            currentInfoWarning = "pc_contact_way_fp";
+            $("#" + currentInfoWarning).addClass("has-error");
+            contact.focus();
+            return;
+        }
+
+        //发送请求...
+        $.post("${ctx}/admin/personal/updateInfo.do",$("#pc_information_fm").serialize(),function(result){
+            if (result == "ok"){
+                alert ("保存个人信息成功");
+                location.href = "${ctx}/admin/main/goPersonalCenter.do";
+                return;
+            }
+            if (result == "param_error"){
+                alert ("参数传递出错");
+                return;
+            }
+            if (result == "error"){
+                alert ("保存个人信息,意外失败");
+                return;
+            }
+            if (result == "notUser"){
+                alert ("无法修改");
+                return;
+            }
+        });
+    }
+
+    //修改密码
+    function pcEditPwd(){
+        $("#" + currentPwdWarning).removeClass("has-error");
+
+        var oldPwd = $("#pc_old_pwd");
+        var oldPwdValue = oldPwd.val();
+        if (typeof(oldPwdValue)=="undefined" || oldPwdValue==""){
+            currentPwdWarning = "pc_old_pwd_fp";
+            $("#" + currentPwdWarning).addClass("has-error");
+            oldPwd.focus();
+            return;
+        }
+
+        var newPwd = $("#pc_new_pwd");
+        var newPwdValue = newPwd.val();
+        if (typeof(newPwdValue)=="undefined" || newPwdValue==""){
+            currentPwdWarning = "pc_new_pwd_fp";
+            $("#" + currentPwdWarning).addClass("has-error");
+            newPwd.focus();
+            return;
+        }
+
+        var confirmPwd = $("#pc_confirm_pwd");
+        var confirmPwdValue = confirmPwd.val();
+        if (typeof(confirmPwdValue)=="undefined" || confirmPwdValue==""){
+            currentPwdWarning = "pc_confirm_pwd_fp";
+            $("#" + currentPwdWarning).addClass("has-error");
+            confirmPwd.focus();
+            return;
+        }
+
+        if (newPwdValue != confirmPwdValue){
+            alert("新密码与确认密码不一致");
+            return;
+        }
+        //发送请求...
+        $.post("${ctx}/admin/personal/updatePwd.do",$("#pc_password_fm").serialize(),function(result){
+            if (result == "ok"){
+                alert ("保存密码成功,退出系统,用新密码重新登录");
+                location.href = "${ctx}/admin/main/exit.do"; //退出
+                return;
+            }
+            if (result == "oldNot"){
+                alert ("原密码错误");
+                currentPwdWarning = "pc_old_pwd_fp";
+                $("#" + currentPwdWarning).addClass("has-error");
+                oldPwd.focus();
+                return;
+            }
+            if (result == "error"){
+                alert ("保存个人信息,意外失败");
+                return;
+            }
+            if (result == "notUser"){
+                alert ("无法修改");
+                return;
+            }
+        });
+    }
+</script>

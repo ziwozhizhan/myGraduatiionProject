@@ -1,0 +1,221 @@
+<#include "/theme/common/header.html" />
+<div class="container">
+    <!-- 顶部logo、系统标题信息、背景图片 -->
+    <#include "/theme/common/logo_and_banner.html" />
+    <!-- 个人信息、导航栏 -->
+    <#include "/theme/common/navbar.html" />
+    <!-- 中心内容显示区 start -->
+    <!-- 数据列表 -->
+    <div class="row" id="p_list">
+        <#include "/theme/permission/p_list.html" />
+    </div>
+    <!-- 新增按钮功能弹窗 -->
+    <div class="modal fade" id="p_new_modal" tabindex="-1" role="dialog" aria-labelledby="p_new_modal_label" aria-hidden="true"
+         data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="p_new_modal_label">新增权限</h4>
+                </div>
+                <!-- 弹窗主题内容 -->
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" id="p_new_modal_fm">
+                        <div class="form-group" id="p_new_name_fp">
+                            <label class="col-sm-3 control-label"><em class="star-em">* </em>权限名称</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" id="p_new_name" name="nameCn">
+                            </div>
+                        </div>
+                        <div class="form-group" id="p_new_code_fp">
+                            <label class="col-sm-3 control-label"><em class="star-em">* </em>权限编码</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" id="p_new_code" name="nameEn">
+                                <i class="note-i">保证唯一</i>
+                            </div>
+                        </div>
+                        <div class="form-group" id="p_new_pid_fp">
+                            <label class="col-sm-3 control-label"><em class="star-em">* </em>PID(整数)</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" id="p_new_pid" value="0" name="pid">
+                                <i class="note-i">请填写父级权限ID,0表示最顶级</i>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onClick="pKeepNew()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 编辑钮功能弹窗 -->
+    <div class="modal fade" id="p_edit_modal" tabindex="-1" role="dialog" aria-labelledby="p_edit_modal_label" aria-hidden="true"
+         data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="p_edit_modal_label">编辑权限</h4>
+                </div>
+                <!-- 弹窗主题内容 -->
+                <div class="modal-body" id="p_edit_modal_label_body">
+                    出现错误，没有获取到数据
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onClick="pKeepEdit()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 中心内容显示区 end -->
+</div>
+<#include "/theme/common/footer.html" />
+<script>
+    var currentNewWarning = "p_new_name_fp";//保存弹窗中有警告样式的文本框ID
+    var currentEditWarning = "p_edit_name_fp";
+
+    //导航选中样式
+    $(function(){
+        $("#nav_system").addClass("active");
+    });
+
+    //删除
+    function pDelete(permId){
+        if (confirm("请确保该权限未被角色引用，且不影响系统运行!是否确定删除权限ID="+permId)){
+            $.post("${ctx}/admin/permission/removePermission.do",{permId:permId},function(result){
+                if (result == "ok"){
+                    alert('删除权限【ID: ' + permId + ' 】成功');
+                    pRefreshData();
+                    return;
+                }
+                if (result == "error"){
+                    alert('删除权限【ID: ' + permId + ' 】失败');
+                    return;
+                }
+            });
+        }
+    }
+
+    //打开编辑弹窗
+    function pShowEditModal(permId){
+        $('#p_edit_modal_label_body').html('出现错误，没有获取到数据');
+        $.post("${ctx}/admin/permission/getPermission.do",{permId:permId},function(result){
+            $('#p_edit_modal_label_body').html(result);
+        });
+        $('#p_edit_modal').modal('show');
+    }
+
+    //保存 编辑
+    function pKeepEdit(){
+        $("#"+currentEditWarning).removeClass("has-error");
+
+        var name = $("#p_edit_name");
+        var nameValue = name.val();
+        if (typeof(nameValue)=="undefined" || nameValue==""){
+            currentEditWarning = "p_edit_name_fp";
+            $("#"+currentEditWarning).addClass("has-error");
+            name.focus();
+            return;
+        }
+
+        var code = $("#p_edit_code");
+        var codeValue = code.val();
+        if (typeof(codeValue)=="undefined" || codeValue==""){
+            currentEditWarning = "p_edit_code_fp";
+            $("#"+currentEditWarning).addClass("has-error");
+            code.focus();
+            return;
+        }
+
+        var pid = $("#p_edit_pid");
+        var pidValue = pid.val();
+        if (typeof(pidValue)=="undefined" || pidValue==""){
+            currentEditWarning = "p_edit_pid_fp";
+            $("#"+currentEditWarning).addClass("has-error");
+            pid.focus();
+            return;
+        }
+
+        //...
+        $.post("${ctx}/admin/permission/updatePermission.do",$("#p_edit_modal_fm").serialize(),function(result){
+            if (result=="ok"){
+                alert ("修改权限成功");
+                $('#p_edit_modal').modal('hide');
+                //刷新页面数据
+                pRefreshData();
+                return;
+            }
+            if (result=="param_error"){
+                alert ("参数格式转换出错，请检查所填内容格式，如：数字是否填成了字母");
+                return;
+            }
+            if (result=="error"){
+                alert ("意外失败");
+            }
+        });
+    }
+
+    //保存新增
+    function pKeepNew(){
+        $("#"+currentNewWarning).removeClass("has-error");
+
+        var name = $("#p_new_name");
+        var nameValue = name.val();
+        if (typeof(nameValue)=="undefined" || nameValue==""){
+            currentNewWarning = "p_new_name_fp";
+            $("#"+currentNewWarning).addClass("has-error");
+            name.focus();
+            return;
+        }
+
+        var code = $("#p_new_code");
+        var codeValue = code.val();
+        if (typeof(codeValue)=="undefined" || codeValue==""){
+            currentNewWarning = "p_new_code_fp";
+            $("#"+currentNewWarning).addClass("has-error");
+            code.focus();
+            return;
+        }
+
+        var pid = $("#p_new_pid");
+        var pidValue = pid.val();
+        if (typeof(pidValue)=="undefined" || pidValue==""){
+            currentNewWarning = "p_new_pid_fp";
+            $("#"+currentNewWarning).addClass("has-error");
+            pid.focus();
+            return;
+        }
+        //...
+        $.post("${ctx}/admin/permission/savePermission.do",$("#p_new_modal_fm").serialize(),function(result){
+            if (result=="ok"){
+                alert ("新增权限成功");
+                $('#p_new_modal').modal('hide');
+                //刷新页面数据
+                pRefreshData();
+                return;
+            }
+            if (result=="not"){
+                alert ("权限编码不唯一，请换一个");
+                return;
+            }
+            if (result=="param_error"){
+                alert ("参数格式转换出错，请检查所填内容格式，如：数字是否填成了字母");
+                return;
+            }
+            if (result=="error"){
+                alert ("意外失败");
+            }
+        });
+    }
+
+    //更新页面数据
+    function pRefreshData(){
+        $.get("${ctx}/admin/permission/listPermission.do", function(data){
+            $('#p_list').html(data);
+        });
+    }
+
+</script>

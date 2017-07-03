@@ -1,0 +1,324 @@
+<#include "/theme/common/header.html" />
+<div class="container">
+	<!-- 顶部logo、系统标题信息、背景图片 -->
+	<#include "/theme/common/logo_and_banner.html" />
+	<!-- 个人信息、导航栏 -->
+	<#include "/theme/common/navbar.html" />
+	<!-- 中心内容显示区 start-->
+	<div class="row">
+		<div class="col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" >
+			<label class="label label-info"><span class="glyphicon glyphicon-hand-right"></span>数据字典</label>
+		</div>
+	</div><br/>
+	<!-- 查询、新增功能栏 -->
+	<div class="row">
+		<div class="col-lg-9 col-md-9 col-lg-offset-1 col-md-offset-1" >
+			<form role="form">
+				<div class="input-group">
+					<span class="input-group-addon">类别：</span>
+					<input id="dd_family_search" type="text" class="form-control" placeholder="请输入类别名称">
+					<span class="input-group-addon">类别成员：</span>
+					<input id="dd_member_search" type="text" class="form-control"  placeholder="请输入类别成员名称">
+						<span class="input-group-btn">
+							<button class="btn btn-default" type="button" onclick="ddSearch()">
+								查询
+							</button>
+						</span>
+				</div>
+			</form>
+		</div>
+		<div class="col-lg-1 col-md-1">
+			<button class="btn btn-default" type="button" data-toggle="modal" data-target="#dd_new_modal">新增</button>
+		</div>
+	</div>
+	<!-- 数据列表与分页 -->
+	<div id="dd_data_and_pager">
+		<#include "/theme/dictionary/data_and_pager.html" />
+	</div>
+	<!-- 新增按钮功能弹窗 -->
+	<div class="modal fade" id="dd_new_modal" tabindex="-1" role="dialog" aria-labelledby="dd_new_modal_label" aria-hidden="true"
+		 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="dd_new_modal_label">新增数据字典</h4>
+				</div>
+				<!-- 弹窗主题内容 -->
+				<div class="modal-body">
+					<form class="form-horizontal" role="form" id="dd_new_modal_fm">
+						<div class="form-group" id="dd_family_fp">
+							<label class="col-sm-3 control-label"><em class="star-em">* </em>类别</label>
+							<div class="col-sm-7">
+								<input class="form-control" type="text" id="dd_family" name="family">
+							</div>
+						</div>
+						<div class="form-group" id="dd_family_value_fp">
+							<label class="col-sm-3 control-label"><em class="star-em">* </em>类别值</label>
+							<div class="col-sm-7">
+								<input class="form-control" type="text" id="dd_family_value" name="familyValue">
+								<i class="note-i">同一类别类别值相同</i>
+							</div>
+						</div>
+						<div class="form-group" id="dd_family_member_fp">
+							<label class="col-sm-3 control-label"><em class="star-em">* </em>类别成员</label>
+							<div class="col-sm-7">
+								<input class="form-control" type="text" id="dd_family_member" name="member">
+							</div>
+						</div>
+						<div class="form-group" id="dd_family_member_value_fp">
+							<label class="col-sm-3 control-label"><em class="star-em">* </em>类别成员值</label>
+							<div class="col-sm-7">
+								<input class="form-control" type="text" id="dd_family_member_value" name="memberValue">
+							</div>
+						</div>
+						<div class="form-group" id="dd_sort_fp">
+							<label class="col-sm-3 control-label"><em class="star-em">* </em>排序(整数)</label>
+							<div class="col-sm-7">
+								<input class="form-control" type="text" id="dd_sort" name="sort">
+								<i class="note-i">值越大越靠前，>=0</i>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" onClick="ddKeepNew()">保存</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 编辑功能弹窗 -->
+	<div class="modal fade" id="dd_edit_modal" tabindex="-1" role="dialog" aria-labelledby="dd_edit_modal_label" aria-hidden="true"
+		 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="dd_edit_modal_label">编辑数据字典</h4>
+				</div>
+				<!-- 弹窗主题内容 -->
+				<div class="modal-body" id="dd_edit_modal_body">
+					暂时没有获取到数据
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" onclick="ddKeepEdit()">保存</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 中心内容显示区 end-->
+</div>
+<#include "/theme/common/footer.html" />
+<script>
+//	var current_warning = "dd_family"; //保存弹窗中有警告样式的文本框ID
+//	var current_warning_edit = "dd_edit_family"; //保存弹窗中有警告样式的文本框ID
+	var current_warning = "dd_family_fp"; //保存弹窗中有警告样式的文本框ID
+	var current_warning_edit = "dd_edit_family_fp"; //保存弹窗中有警告样式的文本框ID
+
+	//导航选中样式
+	$(function(){
+		$("#nav_dictionary").addClass("active");
+	});
+
+	//保存 新增
+	function ddKeepNew(){
+		$("#"+current_warning).removeClass("has-error");
+
+		var family = $("#dd_family").val();
+		if (typeof(family)=="undefined" || family==""){
+			$("#dd_family_fp").addClass("has-error");
+			$("#dd_family").focus();
+			current_warning = "dd_family_fp";
+			return;
+		}
+
+		var family_value = $("#dd_family_value").val();
+		if (typeof(family_value)=="undefined" || family_value==""){
+			$("#dd_family_value_fp").addClass("has-error");
+			$("#dd_family_value").focus();
+			current_warning = "dd_family_value_fp";
+			return;
+		}
+
+		var family_member = $("#dd_family_member").val();
+		if (typeof(family_member)=="undefined" || family_member==""){
+			$("#dd_family_member_fp").addClass("has-error");
+			$("#dd_family_member").focus();
+			current_warning = "dd_family_member_fp";
+			return;
+		}
+
+		var family_member_value = $("#dd_family_member_value").val();
+		if (typeof(family_member_value)=="undefined" || family_member_value==""){
+			$("#dd_family_member_value_fp").addClass("has-error");
+			$("#dd_family_member_value").focus();
+			current_warning = "dd_family_member_value_fp";
+			return;
+		}
+
+		var dd_sort = $("#dd_sort").val();
+		if (typeof(dd_sort)=="undefined" || dd_sort==""){
+			$("#dd_sort_fp").addClass("has-error");
+			$("#dd_sort").focus();
+			current_warning = "dd_sort_fp";
+			return;
+		}
+		$.post("${ctx}/admin/data/saveData.do",$("#dd_new_modal_fm").serialize(),function(result){
+			if(result=="param_error"){
+				alert("请检查参数类型是否正确");return;
+			}
+			if(result == "ok"){
+				alert("新增成功");
+				$('#dd_new_modal').modal('hide');
+				$("#dd_family_search").val('');
+				$("#dd_member_search").val('');
+				ddSearch();
+				return;
+			}
+			if(result == "not"){
+				alert("类别值与类别成员值的组合不唯一");return;
+			}
+			if(result == "error"){
+				alert("发生意外失败");return;
+			}
+		});
+	}
+
+	//弹出编辑弹窗
+	function ddShowEditModal(dataId){
+		$('#dd_edit_modal_body').html('出现错误，没有获取到数据');
+		$.post("${ctx}/admin/data/getData.do",{dataId:dataId},function(result){
+			$('#dd_edit_modal_body').html(result);
+		});
+		$('#dd_edit_modal').modal('show');
+	}
+
+	//保存 编辑
+	function ddKeepEdit(){
+		$("#"+current_warning_edit).removeClass("has-error");
+
+		var family = $("#dd_edit_family").val();
+		if (typeof(family)=="undefined" || family==""){
+			$("#dd_edit_family_fp").addClass("has-error");
+			$("#dd_edit_family").focus();
+			current_warning_edit = "dd_edit_family_fp";
+			return;
+		}
+
+		var family_value = $("#dd_edit_family_value").val();
+		if (typeof(family_value)=="undefined" || family_value==""){
+			$("#dd_edit_family_value_fp").addClass("has-error");
+			$("#dd_edit_family_value").focus();
+			current_warning_edit = "dd_edit_family_value_fp";
+			return;
+		}
+
+		var family_member = $("#dd_edit_family_member").val();
+		if (typeof(family_member)=="undefined" || family_member==""){
+			$("#dd_edit_family_member_fp").addClass("has-error");
+			$("#dd_edit_family_member").focus();
+			current_warning_edit = "dd_edit_family_member_fp";
+			return;
+		}
+
+		var family_member_value = $("#dd_edit_family_member_value").val();
+		if (typeof(family_member_value)=="undefined" || family_member_value==""){
+			$("#dd_edit_family_member_value_fp").addClass("has-error");
+			$("#dd_edit_family_member_value").focus();
+			current_warning_edit = "dd_edit_family_member_value_fp";
+			return;
+		}
+
+		var dd_sort = $("#dd_edit_sort").val();
+		if (typeof(dd_sort)=="undefined" || dd_sort==""){
+			$("#dd_edit_sort_fp").addClass("has-error");
+			$("#dd_edit_sort").focus();
+			current_warning_edit = "dd_edit_sort_fp";
+			return;
+		}
+		$.post("${ctx}/admin/data/updateData.do",$("#dd_edit_modal_fm").serialize(),function(result){
+			if(result=="param_error"){
+				alert("请检查参数类型是否正确");return;
+			}
+			if(result == "ok"){
+				alert("编辑成功");
+				$('#dd_edit_modal').modal('hide');
+				ddSearch();
+				return;
+			}
+			if(result == "not"){
+				alert("类别值与类别成员值的组合不唯一");return;
+			}
+			if(result == "error"){
+				alert("发生意外失败");return;
+			}
+		});
+	}
+
+	//删除
+	function ddDelete(dataId){
+		if (confirm("请谨慎删除，可能会影响系统运行!是否确定要删除数据ID=" + dataId)){
+			$.post("${ctx}/admin/data/removeData.do",{dataId:dataId},function(result){
+				if (result == "ok"){
+					alert("删除数据【ID:" + dataId + "】成功!");
+					ddSearch();
+				}else if(result == "error"){
+					alert("删除数据【ID:" + dataId + "】意外失败!");
+				}
+			});
+		}
+	}
+
+	//查询
+	function ddSearch(){
+		var family = $("#dd_family_search").val();
+		var familyMember = $("#dd_member_search").val();
+		$.post("${ctx}/admin/data/search.do",{family:family,member:familyMember},function(result){
+			$("#dd_data_and_pager").html(result);
+		});
+	}
+
+	//分页方法 start===============
+	//为上一页绑定方法
+	function pagerPre(hasPre,pageNo){
+		if (!hasPre){
+			return ;
+		}
+		pageNo--;
+		pagerPost(pageNo);
+	}
+	//为下一页绑定方法
+	function pagerNext(hasNext,pageNo){
+		if (!hasNext){
+			return ;
+		}
+		pageNo++;
+		pagerPost(pageNo);
+	}
+	//为GO跳转绑定方法
+	function pagerGo(totalPage){
+		if($("#pager_go_page").val()==""){
+			return;
+		}
+		var goPage = parseInt($("#pager_go_page").val());//要跳转的页数
+		if ( goPage < 1){
+			alert("要跳转到页数不能小于1");return;
+		}
+		if (goPage > totalPage){
+			alert("要跳转的页数不能超过最大页数");return;
+		}
+		pagerPost(goPage);
+	}
+	//发送请求
+	function pagerPost(pageNo){
+		var family = $("#dd_family_search").val();
+		var familyMember = $("#dd_member_search").val();
+		$.post("${ctx}/admin/data/search.do",{family:family,member:familyMember,pageNo:pageNo},function(result){
+			$("#dd_data_and_pager").html(result);
+		});
+	}
+	//分页方法 end===============
+
+</script>

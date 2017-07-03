@@ -1,0 +1,104 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* ======================= common ================================ */
+/*必填 * 号样式*/
+.star-em{ 
+	color:#FF7F00;
+}
+/*备注信息*/
+.note-i{
+	color:#557FFF;
+}
+/*输入文本框警告或错误样式，使用bootstrap表单样式时用 has-error*/
+.warning-input{
+	border: 2px solid #ff0000;
+}
+/*为对齐内容而采用的填充文字，隐藏*/
+.fill-em{
+	visibility:hidden
+}
+
+
+/* ======================= 头部 =================================== */
+.banner{
+	height: 200px;
+ 	background: url(../imges/banner.png),-webkit-linear-gradient(rgba(168,255,255,1), #FFFFFF); /* Safari 5.1 - 6.0 */
+  	background: url(../imges/banner.png),-o-linear-gradient(red, blue); /* Opera 11.1 - 12.0 */
+ 	background: url(../imges/banner.png),-moz-linear-gradient(red, blue); /* Firefox 3.6 - 15 */
+  	background: url(../imges/banner.png),linear-gradient(rgba(168,255,255,1), #FFFFFF); /* 标准的语法 */
+	/*background-image:url(../imges/banner.png);*/
+}
+
+/* ======================= 登录页面 ================================ */
+.login-background{
+	background: url(""),-webkit-linear-gradient(rgba(168,255,255,1), #FFFFFF); /* Safari 5.1 - 6.0 */
+	background: url(""),-o-linear-gradient(red, blue); /* Opera 11.1 - 12.0 */
+	background: url(""),-moz-linear-gradient(red, blue); /* Firefox 3.6 - 15 */
+	background: url(""),linear-gradient(rgba(168,255,255,1), #FFFFFF); /* 标准的语法 */
+}
+.login-form div{
+	margin-top:10px;
+}
+.login-warning{
+	border: 2px solid #ff0000;
+}
+
+/* ======================= 字典管理-数据字典 ======================== */
+.dict-warning{
+	border: 2px solid #ff0000;
+}
+
+/* ======================= 权限管理 =============================== */
+.folder{
+	background-image:url(../imges/folderClosed.gif);
+	background-repeat:no-repeat;
+}
+.leaf{
+	background-image:url(../imges/leaf.gif);
+	background-repeat:no-repeat;
+}
+.tree-table table{
+	border-spacing:1px;
+	background:#CCC;
+}
+.tree-table table td{
+	background:#FFF;
+}
+.tree-table table th{
+	background: #D9D9D9;
+}
+
+/* ======================= 角色管理 =============================== */
+.tree-ui .collapsed{
+	background-image:url(../imges/collapsed.gif);
+	background-repeat:no-repeat;
+}
+.tree-ui .expanded{
+	background-image:url(../imges/expanded.gif);
+	background-repeat:no-repeat;
+}
+.tree-ui .text{
+	cursor:pointer;
+}
+.tree-ui .text:hover{
+	color: #FE1235;
+}
+
+/* ======================= 项目管理 =============================== */
+/*等级1*/
+.level-one{
+	background-color: #18DAB6;
+}
+/*等级2*/
+.level-two{
+	background-color: #1854DA;
+}
+/*等级3*/
+.level-three{
+	background-color: #16BB22;
+}
+/*等级4*/
+.level-four{
+	background-color: #EC26A6;
+}

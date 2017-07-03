@@ -1,0 +1,40 @@
+<form class="form-horizontal" role="form" id="pt_edit_modal_fm">
+    <div class="form-group" id="pt_edit_task_name_fp">
+        <input type="hidden" name="projectId" value="${projectId}">
+        <input type="hidden" name="id" value="${updateTask.id}">
+        <label class="col-sm-2 control-label"><em class="star-em">* </em>任务描述</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="pt_edit_task_name" name="taskName">${updateTask.taskName}</textarea>
+            <i class="note-i">不超过 200 字</i>
+        </div>
+    </div>
+    <div class="form-group" id="pt_edit_task_completer_fp">
+        <label class="col-sm-2 control-label"><em class="star-em">* </em>完成人</label>
+        <div class="col-sm-8">
+            <select class="form-control input-sm" id="pt_edit_task_completer" name="userId">
+                <option value="">===请选择===</option>
+                <#list projectMembers as pms>
+                    <option value="${pms.memberId}" <#if (pms.memberId==updateTask.userId)>selected="selected"</#if>>${pms.memberName}</option>
+                </#list>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label"><em class="star-em">* </em>任务等级</label>
+        <div class="col-sm-8">
+            <select class="form-control input-sm" name="urgency">
+                <option value="1" <#if (updateTask.urgency==1)>selected="selected"</#if>>1</option>
+                <option value="2" <#if (updateTask.urgency==2)>selected="selected"</#if>>2</option>
+                <option value="3" <#if (updateTask.urgency==3)>selected="selected"</#if>>3</option>
+                <option value="4" <#if (updateTask.urgency==4)>selected="selected"</#if>>4</option>
+            </select>
+            <i class="note-i">数值越大越紧急</i>
+        </div>
+    </div>
+    <div class="form-group" id="pt_edit_task_time_fp">
+        <label class="col-sm-2 control-label"><em class="star-em">* </em>截止时间</label>
+        <div class="col-sm-8">
+            <input type="datetime-local" class="form-control" id="pt_edit_task_time" name="jiezhiDate" value="${jiezhiDate}">
+        </div>
+    </div>
+</form>

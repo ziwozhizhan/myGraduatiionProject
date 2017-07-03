@@ -1,0 +1,40 @@
+<!-- 项目任务列表与分页 -->
+<#include "/theme/common/pager.html" />
+<!-- 数据列表 -->
+<div class="row">
+    <div class="col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" >
+        <table class="table table-bordered table-hover">
+            <caption>
+
+            </caption>
+            <thead>
+            <tr style=" background-color:#eee;">
+                <th>ID</th>
+                <th>等级</th>
+                <th>任务描述</th>
+                <th>创建人</th>
+                <th>完成人</th>
+                <th>状态</th>
+                <th>截止时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#list projectTaskWebPage.rows as task>
+                <tr>
+                    <td>${task.id}</td>
+                    <td><span class="badge <#if (task.status==3)><#elseif (task.urgency==1)>level-one<#elseif (task.urgency==2)>level-two
+                        <#elseif (task.urgency==3)>level-three<#elseif (task.urgency==4)>level-four<#else></#if>">
+                        ${task.urgency}</span></td><!-- 样式完成后默认，其他等级参照页头样式 -->
+                    <td><a href="javascript:void(0)" onClick="ptShowLogModal(${task.id})" >${task.taskName}</a></td>
+                    <td>${task.creater}</td>
+                    <td>${task.completer}</td>
+                    <td>${task.statusCn}</td>
+                    <td>${task.expectDate}</td>
+                </tr>
+            </#list>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- 分页 -->
+<@pager projectTaskWebPage />

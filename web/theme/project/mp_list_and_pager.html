@@ -1,0 +1,47 @@
+<#include "/theme/common/pager.html" />
+<!-- 数据列表 -->
+<div class="row">
+    <div class="col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" >
+        <table class="table table-bordered table-hover">
+            <caption>
+
+            </caption>
+            <thead>
+            <tr style=" background-color:#eee;">
+                <th>ID</th>
+                <th>项目名称</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#list myProjectWebPage.rows as mp>
+                <tr>
+                    <td>${mp.id}</td>
+                    <td><a href="javascript:void(0)" onClick="mpShowProjectLogModal(${mp.id})" >${mp.projectName}</a></td>
+                    <td>${mp.statusCn}</td>
+                    <td>
+                        <a href="javascript:void(0)" onClick="mpGoProjectTask(${mp.id})">任务</a>
+                        |<a href="javascript:void(0)" onClick="mpShowEditModal(${mp.id})">编辑</a>
+                        <#if (mp.status == 2 || mp.status == 0)>
+                            |<a href="javascript:void(0)" onClick="mpShowAnyModal('${mp.id}','1')">启动</a>
+                        </#if>
+                        <#if (mp.status == 0)>
+                            |<a href="javascript:void(0)" onClick="mpDelete(${mp.id})">删除</a>
+                        </#if>
+                        <#if (mp.status == 1)>
+                            |<a href="javascript:void(0)" onClick="mpShowAnyModal('${mp.id}','2')">暂停</a>
+                            |<a href="javascript:void(0)" onClick="mpShowAnyModal('${mp.id}','4')">完成</a>
+                        </#if>
+                        <#if (mp.status == 1 || mp.status == 2)>
+                            |<a href="javascript:void(0)" onClick="mpShowAnyModal('${mp.id}','3')">作废</a>
+                        </#if>
+                    </td>
+                </tr>
+            </#list>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- 分页 -->
+<@pager myProjectWebPage />

@@ -1,0 +1,195 @@
+<#include "/theme/common/header.html" />
+<div class="container">
+    <!-- 顶部logo、系统标题信息、背景图片 -->
+    <#include "/theme/common/logo_and_banner.html" />
+    <!-- 个人信息、导航栏 -->
+    <#include "/theme/common/navbar.html" />
+    <!-- 中心内容显示区 start -->
+    <!-- 数据列表 -->
+    <div class="row" id="r_list">
+        <#include "/theme/role/r_list.html" />
+    </div>
+    <!-- 新增按钮功能弹窗 -->
+    <div class="modal fade" id="r_new_modal" tabindex="-1" role="dialog" aria-labelledby="r_new_modal_label" aria-hidden="true"
+         data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="r_new_modal_label">新增角色</h4>
+                </div>
+                <!-- 弹窗主题内容 -->
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" id="r_new_modal_fm">
+                        <div class="form-group" id="r_new_name_fp">
+                            <label class="col-sm-2 control-label"><em class="star-em">* </em>角色名称</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" id="r_new_name" name="roleName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><em class="fill-em">* </em>角色描述</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" id="r_new_msg" name="describe">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onClick="rKeepNew()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 编辑功能弹窗 -->
+    <div class="modal fade" id="r_edit_modal" tabindex="-1" role="dialog" aria-labelledby="r_edit_modal_label" aria-hidden="true"
+         data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="r_edit_modal_label">编辑角色</h4>
+                </div>
+                <!-- 弹窗主题内容 -->
+                <div class="modal-body" id="r_edit_modal_label_body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onClick="rKeepEdit()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 赋予权限按钮功能弹窗 -->
+    <div class="modal fade" id="r_permission_modal" tabindex="-1" role="dialog" aria-labelledby="r_permission_modal_label" aria-hidden="true"
+         data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="r_permission_modal_label">赋予权限</h4>
+                </div>
+                <!-- 弹窗主题内容 -->
+                <div class="modal-body tree-ui" id="r_permission_modal_body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onClick="rKeepPermission()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 中心内容显示区 end -->
+</div>
+<#include "/theme/common/footer.html" />
+<script>
+    //导航选中样式
+    $(function(){
+        $("#nav_system").addClass("active");
+    });
+
+    //打开 赋予权限 窗口
+    function rShowPermissionModal(roleId){
+        $('#r_permission_modal_body').html("暂时没有获取到数据");
+        $.post("${ctx}/admin/role/listPermissions.do",{roleId:roleId},function(result){
+            $('#r_permission_modal_body').html(result);
+        });
+        $('#r_permission_modal').modal('show');
+    }
+
+    //删除
+    function rDelete(roleId){
+        if (confirm("请确保该角色未被用户引用，且不影响系统运行!是否确定删除角色ID="+roleId)){
+            $.post("${ctx}/admin/role/removeRole.do",{roleId:roleId},function(result){
+                if (result == "ok"){
+                    alert ("删除角色【ID=" + roleId + "】成功");
+                    rRefresh();//刷新
+                    return;
+                }
+                if (result == "error"){
+                    alert("删除角色【ID=" + roleId + "】失败");
+                }
+            });
+        }
+    }
+
+    //打开编辑弹窗
+    function rShowEditModal(roleId){
+        $('#r_edit_modal_label_body').html("出现错误，没有获取到数据");
+        $.post("${ctx}/admin/role/getRole.do",{roleId:roleId},function(result){
+            $('#r_edit_modal_label_body').html(result);
+        });
+        $('#r_edit_modal').modal('show');
+    }
+
+    //保存 编辑
+    function rKeepEdit(){
+        $("#r_edit_name_fp").removeClass("has-error");
+
+        var name = $("#r_edit_name");
+        var nameValue = name.val();
+        if (typeof(nameValue)=="undefined" || nameValue==""){
+            $("#r_edit_name_fp").addClass("has-error");
+            name.focus();
+            return;
+        }
+
+        $.post("${ctx}/admin/role/updateRole.do",$("#r_edit_modal_fm").serialize(),function(result){
+            if (result == "ok"){
+                alert ("编辑角色成功");
+                rRefresh(); //刷新
+                $('#r_edit_modal').modal('hide');
+                return;
+            }
+            if (result == "param_error"){
+                alert ("参数绑定错误");
+                return;
+            }
+            if (result == "error"){
+                alert ("意外失败");
+                return;
+            }
+        });
+    }
+
+    //保存新增
+    function rKeepNew(){
+        $("#r_new_name_fp").removeClass("has-error");
+
+        var name = $("#r_new_name");
+        var nameValue = name.val();
+        if (typeof(nameValue)=="undefined" || nameValue==""){
+            $("#r_new_name_fp").addClass("has-error");
+            name.focus();
+            return;
+        }
+
+        //...
+        $.post("${ctx}/admin/role/saveRole.do",$("#r_new_modal_fm").serialize(),function(result){
+            if (result == "ok"){
+                alert ("新增角色成功");
+                rRefresh(); //刷新
+                $('#r_new_modal').modal('hide');
+                return;
+            }
+            if (result == "param_error"){
+                alert ("参数绑定错误");
+                return;
+            }
+            if (result == "error"){
+                alert ("意外失败");
+                return;
+            }
+        });
+    }
+
+    //刷新角色数据列表
+    function rRefresh(){
+        $.get("${ctx}/admin/role/listRoles.do", function(data){
+            $('#r_list').html(data);
+        });
+    }
+</script>
